@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  # Banco de Dados (PostgreSQL)
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-devops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devops123}
+      POSTGRES_DB: ${POSTGRES_DB:-devops_stack}
+    volumes:
+      - ./volumes/postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - devops-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-devops}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./volumes/prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    networks:
+      - devops-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://localhost:9090/-/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - postgres-exporter
+
+  # Grafana
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    volumes:
+      - ./volumes/grafana_data:/var/lib/grafana
+      - ./configs/grafana/provisioning:/etc/grafana/provisioning
+      - ./configs/grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    ports:
+      - "3000:3000"
+    networks:
+      - devops-net
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Keycloak com métricas habilitadas
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD:-admin123}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-devops_stack}
+      KC_DB_USERNAME: ${POSTGRES_USER:-devops}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-devops123}
+      KC_PROXY: edge
+      KC_METRICS_ENABLED: "true"  # Habilita métricas
+      KC_HTTP_ENABLED: "true"
+    volumes:
+      - ./configs/keycloak:/opt/keycloak/data/import
+    command:
+      - start
+      - --auto-build
+      - --db-schema=public
+      - --health-enabled=true
+      - --metrics-enabled=true
+      - --http-enabled=true
+      - --hostname-strict=false
+    ports:
+      - "8180:8080"
+    networks:
+      - devops-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Postgres Exporter para métricas do PostgreSQL
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-devops}:${POSTGRES_PASSWORD:-devops123}@postgres:5432/${POSTGRES_DB:-devops_stack}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - devops-net
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  devops-net:
+    driver: bridge
+    name: devops-net
