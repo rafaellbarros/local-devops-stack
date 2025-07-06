@@ -6,17 +6,20 @@ services:
     image: postgres:15-alpine
     container_name: postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-devops}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devops123}
-      POSTGRES_DB: ${POSTGRES_DB:-devops}
+      POSTGRES_USER: ${POSTGRES_ROOT_USER:-postgres}  # Usuário admin principal
+      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD:-postgres123}
+      POSTGRES_DB: ${POSTGRES_ROOT_DB:-postgres}  # DB inicial (pode ser 'postgres')
+      LANG: en_US.utf8
+      LC_ALL: en_US.utf8
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./configs/postgres/init-scripts:/docker-entrypoint-initdb.d  # Pasta com scripts SQL
     ports:
       - "54322:5432"
     networks:
       - devops-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-devops}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_ROOT_USER:-postgres}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -78,9 +81,9 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD:-admin123}
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-devops}
-      KC_DB_USERNAME: ${POSTGRES_USER:-devops}
-      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-devops123}
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${DB_KEYCLOAK:-devops_keycloak}
+      KC_DB_USERNAME: ${DB_KEYCLOAK_USER:-keycloak_user}
+      KC_DB_PASSWORD: ${DB_KEYCLOAK_PASSWORD:-keycloak123}
       KC_DB_SCHEMA: public
       KC_PROXY: edge
       KC_HTTP_ENABLED: "true"
@@ -142,7 +145,10 @@ services:
     image: prometheuscommunity/postgres-exporter
     container_name: postgres-exporter
     environment:
-      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-devops}:${POSTGRES_PASSWORD:-devops123}@postgres:5432/${POSTGRES_DB:-devops}?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_ROOT_USER:-postgres}:${POSTGRES_ROOT_PASSWORD:-postgres123}@postgres:5432/postgres?sslmode=disable"
+      PG_EXPORTER_EXTEND_QUERY_PATH: /etc/postgresql/queries.yaml
+    volumes:
+      - ./configs/postgres/queries.yaml:/etc/postgresql/queries.yaml
     ports:
       - "9187:9187"
     networks:

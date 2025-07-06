@@ -55,10 +55,9 @@
     ]
   },
   "editable": true,
-  "gnetId": 12485,
+  "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1592399036513,
   "links": [],
   "panels": [
     {
@@ -175,97 +174,6 @@
         "#d44a3a"
       ],
       "datasource": "DS_PROMETHEUS",
-      "description": "Max Replication lag behind master in seconds\n\nOnly available on a standby system.\n\nSource: pg_last_xact_replay_timestamp\n\nUse: pg_stat_replication for Details.",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "format": "s",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 4,
-        "y": 1
-      },
-      "id": 84,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true,
-        "ymax": null,
-        "ymin": null
-      },
-      "tableColumn": "",
-      "targets": [
-        {
-          "expr": "max(pg_replication_lag{instance=\"$Instance\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Max Replication Lag",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "max"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
-      "datasource": "DS_PROMETHEUS",
       "description": "Clients executing Statements.\n\nSource: pg_stat_activity",
       "fieldConfig": {
         "defaults": {
@@ -284,7 +192,7 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 8,
+        "x": 4,
         "y": 1
       },
       "id": 23,
@@ -344,6 +252,77 @@
         }
       ],
       "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "DS_PROMETHEUS",
+      "description": "Percentage of max_connections used",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 0,
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-green",
+                "value": null
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": 0.75
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 0.9
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "id": 9,
+      "links": [],
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "7.0.3",
+      "targets": [
+        {
+          "expr": "sum(pg_stat_database_numbackends)/max(pg_settings_max_connections)",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Connections used",
+      "type": "gauge"
     },
     {
       "cacheTimeout": null,
@@ -419,77 +398,6 @@
     {
       "cacheTimeout": null,
       "datasource": "DS_PROMETHEUS",
-      "description": "Percentage of max_connections used",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "decimals": 0,
-          "mappings": [
-            {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
-            }
-          ],
-          "nullValueMode": "connected",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "semi-dark-green",
-                "value": null
-              },
-              {
-                "color": "semi-dark-yellow",
-                "value": 0.75
-              },
-              {
-                "color": "semi-dark-red",
-                "value": 0.9
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 16,
-        "y": 1
-      },
-      "id": 9,
-      "links": [],
-      "options": {
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "pluginVersion": "7.0.3",
-      "targets": [
-        {
-          "expr": "sum(pg_stat_database_numbackends)/max(pg_settings_max_connections)",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Connections used",
-      "type": "gauge"
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "DS_PROMETHEUS",
       "description": "Transaction committed vs rollbacked",
       "fieldConfig": {
         "defaults": {
@@ -529,7 +437,7 @@
       "gridPos": {
         "h": 6,
         "w": 4,
-        "x": 20,
+        "x": 16,
         "y": 1
       },
       "id": 15,
@@ -568,7 +476,6 @@
         "#d44a3a"
       ],
       "datasource": "DS_PROMETHEUS",
-      "decimals": 1,
       "description": "Source: pg_postmaster_start_time()",
       "fieldConfig": {
         "defaults": {
@@ -587,8 +494,8 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 0,
-        "y": 4
+        "x": 20,
+        "y": 1
       },
       "id": 57,
       "interval": null,
@@ -626,7 +533,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "{instance=\"db01vp-nbg6a.obs.noris.net:9187\", job=\"postgres-exporter\", server=\"213.95.132.73:5432\"}",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "time()-(pg_postmaster_start_time_seconds{instance=\"$Instance\"})",
@@ -677,7 +584,7 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 4,
+        "x": 0,
         "y": 4
       },
       "id": 14,
@@ -768,7 +675,7 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 8,
+        "x": 4,
         "y": 4
       },
       "id": 93,
@@ -860,8 +767,8 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 0,
-        "y": 7
+        "x": 8,
+        "y": 4
       },
       "id": 37,
       "interval": null,
@@ -949,8 +856,8 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 8,
-        "y": 7
+        "x": 12,
+        "y": 4
       },
       "id": 102,
       "interval": null,
@@ -1041,8 +948,8 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 12,
-        "y": 7
+        "x": 16,
+        "y": 4
       },
       "id": 66,
       "interval": null,
@@ -1080,7 +987,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "pg_settings_shared_buffers_bytes{instance=\"db01vp-nbg6a.obs.noris.net:9187\", job=\"postgres-exporter\", server=\"213.95.132.73:5432\"}",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "pg_settings_shared_buffers_bytes{instance=\"$Instance\"}",
@@ -1130,8 +1037,8 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 16,
-        "y": 7
+        "x": 20,
+        "y": 4
       },
       "id": 75,
       "interval": null,
@@ -1169,7 +1076,7 @@
         "ymax": null,
         "ymin": null
       },
-      "tableColumn": "pg_settings_max_connections{instance=\"db01vp-nbg6a.obs.noris.net:9187\", job=\"postgres-exporter\", server=\"213.95.132.73:5432\"}",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "pg_settings_max_connections{instance=\"$Instance\"}",
@@ -1211,7 +1118,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 10
+        "y": 7
       },
       "hiddenSeries": false,
       "id": 24,
@@ -1320,7 +1227,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 7
       },
       "hiddenSeries": false,
       "id": 28,
@@ -1429,7 +1336,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 19
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 12,
@@ -1536,7 +1443,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 19
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 27,
@@ -1645,7 +1552,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 26,
@@ -1683,7 +1590,7 @@
         {
           "expr": "sum ((rate(pg_stat_database_blk_write_time{instance=\"$Instance\"}[$Interval])))",
           "interval": "",
-          "legendFormat": "blk_read_time",
+          "legendFormat": "blk_write_time",
           "refId": "B"
         }
       ],
@@ -1747,7 +1654,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 111,
@@ -1850,7 +1757,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 37
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 29,
@@ -1951,7 +1858,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 37
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 30,
@@ -2055,7 +1962,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 39
       },
       "hiddenSeries": false,
       "id": 31,
@@ -2141,12 +2048,26 @@
       }
     },
     {
+      "collapsed": false,
+      "datasource": "DS_PROMETHEUS",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "id": 20,
+      "panels": [],
+      "title": "Database Specific Metrics",
+      "type": "row"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
       "datasource": "DS_PROMETHEUS",
-      "description": "Lag behind master in seconds.\n\nOnly available on a standby System.",
+      "description": "Database size over time for Keycloak and Jenkins databases",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2156,14 +2077,13 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 10,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 47
+        "y": 45
       },
       "hiddenSeries": false,
-      "id": 120,
-      "interval": "1m",
+      "id": 200,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -2176,7 +2096,6 @@
       },
       "lines": true,
       "linewidth": 1,
-      "links": [],
       "nullPointMode": "null",
       "options": {
         "dataLinks": []
@@ -2191,18 +2110,23 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max(pg_replication_lag{instance=\"$Instance\"})",
-          "instant": false,
-          "intervalFactor": 1,
-          "legendFormat": "lag ",
+          "expr": "pg_database_size{datname=\"devops_keycloak\"}",
+          "interval": "",
+          "legendFormat": "Keycloak DB Size",
           "refId": "A"
+        },
+        {
+          "expr": "pg_database_size{datname=\"db_jenkins\"}",
+          "interval": "",
+          "legendFormat": "Jenkins DB Size",
+          "refId": "B"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Replication lag ",
+      "title": "Database Size Comparison",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -2218,7 +2142,109 @@
       },
       "yaxes": [
         {
-          "format": "s",
+          "format": "bytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "DS_PROMETHEUS",
+      "description": "Connection count for Keycloak and Jenkins databases",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 45
+      },
+      "hiddenSeries": false,
+      "id": 201,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "pg_stat_database_numbackends{datname=\"devops_keycloak\"}",
+          "interval": "",
+          "legendFormat": "Keycloak Connections",
+          "refId": "A"
+        },
+        {
+          "expr": "pg_stat_database_numbackends{datname=\"db_jenkins\"}",
+          "interval": "",
+          "legendFormat": "Jenkins Connections",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Database Connections Comparison",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -2240,1274 +2266,235 @@
       }
     },
     {
-      "collapsed": true,
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "DS_PROMETHEUS",
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 57
+      "description": "Transaction rate comparison between Keycloak and Jenkins databases",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
       },
-      "id": 20,
-      "panels": [
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 53
+      },
+      "hiddenSeries": false,
+      "id": 202,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
         {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
-          "datasource": "DS_PROMETHEUS",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "gridPos": {
-            "h": 3,
-            "w": 4,
-            "x": 0,
-            "y": 2
-          },
-          "id": 46,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
-          },
-          "tableColumn": "pg_stat_activity_count{datname=\"grafana\", instance=\"db01vp-nbg6a.obs.noris.net:9187\", job=\"postgres-exporter\", server=\"213.95.132.73:5432\", state=\"active\"}",
-          "targets": [
-            {
-              "expr": "pg_stat_activity_count{state=\"active\",instance=\"$Instance\",datname=~\"$Database\"}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": "",
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Active clients",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "current"
-        },
-        {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
-          "datasource": "DS_PROMETHEUS",
-          "decimals": 2,
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "format": "bytes",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "gridPos": {
-            "h": 3,
-            "w": 4,
-            "x": 4,
-            "y": 2
-          },
-          "id": 43,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
-          },
-          "tableColumn": "pg_database_size{datname=\"grafana\", instance=\"db01vp-nbg6a.obs.noris.net:9187\", job=\"postgres-exporter\", server=\"213.95.132.73:5432\"}",
-          "targets": [
-            {
-              "expr": "pg_database_size{instance=\"$Instance\",datname=\"$Database\"}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": "",
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Database size",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "current"
-        },
-        {
-          "cacheTimeout": null,
-          "datasource": "DS_PROMETHEUS",
-          "description": "Shared buffer hits vs reads from disc",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "decimals": 2,
-              "mappings": [
-                {
-                  "id": 0,
-                  "op": "=",
-                  "text": "N/A",
-                  "type": 1,
-                  "value": "null"
-                }
-              ],
-              "nullValueMode": "connected",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "semi-dark-red",
-                    "value": null
-                  },
-                  {
-                    "color": "semi-dark-yellow",
-                    "value": 0.8
-                  },
-                  {
-                    "color": "semi-dark-green",
-                    "value": 0.9
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 4,
-            "x": 8,
-            "y": 2
-          },
-          "id": 44,
-          "links": [],
-          "options": {
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true
-          },
-          "pluginVersion": "7.0.3",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "targets": [
-            {
-              "expr": "pg_stat_database_blks_hit{instance=~\"$Instance\",datname=~\"$Database\"}/(pg_stat_database_blks_hit{instance=~\"$Instance\",datname=~\"$Database\"}+pg_stat_database_blks_read{instance=~\"$Instance\",datname=~\"$Database\"})",
-              "refId": "A"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Shared Buffer Hits",
-          "type": "gauge"
-        },
-        {
-          "cacheTimeout": null,
-          "datasource": "DS_PROMETHEUS",
-          "description": "Transaction committed vs rollbacked",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "decimals": 2,
-              "mappings": [
-                {
-                  "id": 0,
-                  "op": "=",
-                  "text": "N/A",
-                  "type": 1,
-                  "value": "null"
-                }
-              ],
-              "nullValueMode": "connected",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "semi-dark-red",
-                    "value": null
-                  },
-                  {
-                    "color": "#EAB839",
-                    "value": 0.75
-                  },
-                  {
-                    "color": "semi-dark-green",
-                    "value": 0.9
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 4,
-            "x": 12,
-            "y": 2
-          },
-          "id": 45,
-          "links": [],
-          "options": {
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true
-          },
-          "pluginVersion": "7.0.3",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "targets": [
-            {
-              "expr": "pg_stat_database_xact_commit{instance=\"$Instance\",datname=~\"$Database\"}/(pg_stat_database_xact_commit{instance=\"$Instance\",datname=~\"$Database\"} + pg_stat_database_xact_rollback{instance=\"$Instance\",datname=~\"$Database\"})",
-              "refId": "A"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Commit Ratio",
-          "type": "gauge"
-        },
-        {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
-          "datasource": "DS_PROMETHEUS",
-          "description": "Transactions committed + roolback per minute\n\nSource: pg_stat_database,xact_commit + xact_rollback",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "gridPos": {
-            "h": 3,
-            "w": 4,
-            "x": 0,
-            "y": 5
-          },
-          "id": 122,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true,
-            "ymax": null,
-            "ymin": null
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "expr": "sum((rate(pg_stat_database_xact_commit{instance=\"$Instance\",datname=\"$Database\"}[$Interval])))+sum((rate(pg_stat_database_xact_rollback{instance=\"$Instance\",datname=\"$Database\"}[$Interval])))",
-              "interval": "",
-              "legendFormat": "",
-              "refId": "A"
-            }
-          ],
-          "thresholds": "",
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Transaction rate",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "current"
-        },
-        {
-          "aliasColors": {},
-          "bars": true,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "DS_PROMETHEUS",
-          "decimals": 0,
-          "description": "View: pg_stat_activity",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 0,
-            "y": 8
-          },
-          "hiddenSeries": false,
-          "id": 47,
-          "interval": "$Interval",
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
-            "max": true,
-            "min": false,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": false,
-          "linewidth": 1,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "PostgreSQL Documentation",
-              "url": "https://www.postgresql.org/docs/current/monitoring-stats.html"
-            }
-          ],
-          "nullPointMode": "null as zero",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": true,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum by (state) (pg_stat_activity_count{instance=\"$Instance\",datname=\"$Database\"})",
-              "legendFormat": "{{state}}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Connections by state (stacked)",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "decimals": 0,
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "decimals": 0,
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "DS_PROMETHEUS",
-          "decimals": 2,
-          "description": "1 Minute rate of transactions committed or rollback.",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 12,
-            "y": 8
-          },
-          "hiddenSeries": false,
-          "id": 48,
+          "expr": "rate(pg_stat_database_xact_commit{datname=\"devops_keycloak\"}[$Interval]) + rate(pg_stat_database_xact_rollback{datname=\"devops_keycloak\"}[$Interval])",
           "interval": "",
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": false,
-            "hideZero": false,
-            "max": true,
-            "min": false,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "rate(pg_stat_database_xact_commit{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "interval": "",
-              "legendFormat": "committed",
-              "refId": "A"
-            },
-            {
-              "expr": "rate(pg_stat_database_xact_rollback{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "rollback",
-              "refId": "B"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Transactions",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
+          "legendFormat": "Keycloak Transactions",
+          "refId": "A"
         },
         {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "DS_PROMETHEUS",
-          "description": "Source: pg_stat_database",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 0,
-            "y": 17
-          },
-          "hiddenSeries": false,
-          "id": 124,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideZero": false,
-            "max": true,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "rate(pg_stat_database_tup_inserted{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "interval": "",
-              "legendFormat": "Inserts",
-              "refId": "A"
-            },
-            {
-              "expr": "rate(pg_stat_database_tup_updated{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "interval": "",
-              "legendFormat": "Updates",
-              "refId": "B"
-            },
-            {
-              "expr": "rate(pg_stat_database_tup_deleted{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "interval": "",
-              "legendFormat": "Deletes",
-              "refId": "C"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Tuples inserts/updates/deletes",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "DS_PROMETHEUS",
-          "description": "Source: pg_stat_database\n\n* tup_fetched: rows needed to satisfy queries\n* tup_returned: rows read/scanned",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 12,
-            "y": 17
-          },
-          "hiddenSeries": false,
-          "id": 126,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideZero": false,
-            "max": true,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "rate(pg_stat_database_tup_fetched{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "interval": "",
-              "legendFormat": "Fetched",
-              "refId": "A"
-            },
-            {
-              "expr": "rate(pg_stat_database_tup_returned{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "interval": "",
-              "legendFormat": "Returned",
-              "refId": "B"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Tuples fetched/returned",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "DS_PROMETHEUS",
-          "description": "Source: pg_locks",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 10,
-            "w": 12,
-            "x": 0,
-            "y": 26
-          },
-          "hiddenSeries": false,
-          "id": 128,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [
-            {
-              "title": "PostgreSQL Lock Modes",
-              "url": "https://www.postgresql.org/docs/12/explicit-locking.html#LOCKING-TABLES"
-            }
-          ],
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum by (mode) (pg_locks_count{instance=\"$Instance\",datname=\"$Database\"})",
-              "legendFormat": "{{mode}}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Locks by state",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "DS_PROMETHEUS",
-          "description": "Should be 0 \n\nSource: pg_stat_database\n\nWith log_lock_waits turned on, deadlocks will be logged to the PostgreSQL Logfiles.",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 5,
-            "w": 12,
-            "x": 12,
-            "y": 26
-          },
-          "hiddenSeries": false,
-          "id": 130,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
-            "max": true,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [
-            {
-              "title": "PostgreSQL Locking",
-              "url": "https://www.postgresql.org/docs/12/explicit-locking.html"
-            }
-          ],
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "rate(pg_stat_database_deadlocks{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "interval": "",
-              "legendFormat": "deadlocks",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Deadlocks by database",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "DS_PROMETHEUS",
-          "description": "Should be 0. If temporary files are created, it can indicate insufficient work_mem. With log_temp_files the creation of temporary files are logged to the PostgreSQL Logfiles.",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 5,
-            "w": 12,
-            "x": 12,
-            "y": 31
-          },
-          "hiddenSeries": false,
-          "id": 132,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
-            "max": true,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [
-            {
-              "title": "PostgreSQL Ressources",
-              "url": "https://www.postgresql.org/docs/current/runtime-config-resource.html"
-            }
-          ],
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "scopedVars": {
-            "Database": {
-              "selected": false,
-              "text": "grafana",
-              "value": "grafana"
-            }
-          },
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "rate(pg_stat_database_temp_files{instance=\"$Instance\",datname=\"$Database\"}[$Interval])",
-              "interval": "",
-              "legendFormat": "temp_files",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Temporary files by database",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
+          "expr": "rate(pg_stat_database_xact_commit{datname=\"db_jenkins\"}[$Interval]) + rate(pg_stat_database_xact_rollback{datname=\"db_jenkins\"}[$Interval])",
+          "interval": "",
+          "legendFormat": "Jenkins Transactions",
+          "refId": "B"
         }
       ],
-      "repeat": "Database",
-      "title": "Database: $Database",
-      "type": "row"
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Transaction Rate Comparison",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "DS_PROMETHEUS",
+      "description": "Cache hit ratio comparison between Keycloak and Jenkins databases",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 53
+      },
+      "hiddenSeries": false,
+      "id": 203,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "pg_stat_database_blks_hit{datname=\"devops_keycloak\"}/(pg_stat_database_blks_hit{datname=\"devops_keycloak\"}+pg_stat_database_blks_read{datname=\"devops_keycloak\"})*100",
+          "interval": "",
+          "legendFormat": "Keycloak Cache Hit %",
+          "refId": "A"
+        },
+        {
+          "expr": "pg_stat_database_blks_hit{datname=\"db_jenkins\"}/(pg_stat_database_blks_hit{datname=\"db_jenkins\"}+pg_stat_database_blks_read{datname=\"db_jenkins\"})*100",
+          "interval": "",
+          "legendFormat": "Jenkins Cache Hit %",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cache Hit Ratio Comparison",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
-  "refresh": "",
+  "refresh": "1m",
   "schemaVersion": 25,
   "style": "dark",
   "tags": [
-    "postgres"
+    "postgres",
+    "monitoring"
   ],
   "templating": {
     "list": [
       {
         "allValue": null,
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "postgres:9187",
+          "value": "postgres:9187"
+        },
         "datasource": "DS_PROMETHEUS",
-        "definition": "label_values({job=\"postgres-exporter\"}, instance)",
+        "definition": "label_values(pg_up, instance)",
         "hide": 0,
         "includeAll": false,
-        "label": null,
+        "label": "Instance",
         "multi": false,
         "name": "Instance",
         "options": [],
-        "query": "label_values({job=\"postgres-exporter\"}, instance)",
+        "query": "label_values(pg_up, instance)",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -3520,58 +2507,34 @@
       },
       {
         "allValue": null,
-        "current": {},
-        "datasource": "DS_PROMETHEUS",
-        "definition": "label_values(datname)",
-        "hide": 0,
-        "includeAll": true,
-        "label": null,
-        "multi": true,
-        "name": "Database",
-        "options": [],
-        "query": "label_values(datname)",
-        "refresh": 1,
-        "regex": "/^(?!template*|postgres).*$/",
-        "skipUrlSync": false,
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tags": [],
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      },
-      {
-        "auto": true,
-        "auto_count": 30,
-        "auto_min": "10s",
         "current": {
           "selected": false,
-          "text": "10m",
-          "value": "10m"
+          "text": "1m",
+          "value": "1m"
         },
         "hide": 0,
-        "label": null,
+        "label": "Interval",
         "name": "Interval",
         "options": [
           {
             "selected": false,
-            "text": "auto",
-            "value": "$__auto_interval_Interval"
+            "text": "30s",
+            "value": "30s"
           },
           {
-            "selected": false,
-            "text": "30sec",
-            "value": "30sec"
-          },
-          {
-            "selected": false,
+            "selected": true,
             "text": "1m",
             "value": "1m"
           },
           {
-            "selected": true,
-            "text": "10m",
-            "value": "10m"
+            "selected": false,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": false,
+            "text": "15m",
+            "value": "15m"
           },
           {
             "selected": false,
@@ -3599,20 +2562,21 @@
             "value": "1d"
           }
         ],
-        "query": "30sec,1m,10m,30m,1h,6h,12h,1d",
-        "queryValue": "",
-        "refresh": 2,
+        "query": "30s,1m,5m,15m,30m,1h,6h,12h,1d",
         "skipUrlSync": false,
         "type": "interval"
       }
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
       "1m",
       "5m",
       "15m",
@@ -3620,11 +2584,21 @@
       "1h",
       "2h",
       "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
     ]
   },
   "timezone": "",
-  "title": "01 - PostgreSQL Exporter",
-  "uid": "v5ciIbUZz",
-  "version": 2,
-  "description": "Postgres exporter Dashboard for display important postgreSQL metric"
+  "title": "PostgreSQL Monitoring - Multi-Database",
+  "uid": "postgres-multi-db",
+  "version": 1
 }

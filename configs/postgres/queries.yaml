@@ -1,0 +1,6 @@
+pg_databases:
+  query: "SELECT datname FROM pg_database WHERE datistemplate = false;"
+  metrics:
+    - datname:
+        usage: "LABEL"
+        description: "Name of the database"
