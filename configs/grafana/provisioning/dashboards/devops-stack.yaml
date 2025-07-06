@@ -1,3 +1,4 @@
+# configs/grafana/provisioning/dashboards/devops-stack.yaml
 apiVersion: 1
 
 providers:
@@ -9,5 +10,5 @@ providers:
   editable: true
   updateIntervalSeconds: 30
   options:
-    path: /etc/grafana/provisioning/dashboards
+    path: /var/lib/grafana/dashboards
     foldersFromFilesStructure: true

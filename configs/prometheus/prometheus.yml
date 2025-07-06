@@ -8,13 +8,40 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   - job_name: 'keycloak'
-    metrics_path: '/metrics'  # Novo endpoint padrão
+    metrics_path: '/metrics'
     static_configs:
       - targets: ['keycloak:8080']
-    scheme: http
-    scrape_interval: 10s
-    scrape_timeout: 5s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'keycloak:8080'
+      - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance]
+        target_label: helm_release
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        target_label: client_id
 
   - job_name: 'postgres-exporter'
     static_configs:
       - targets: ['postgres-exporter:9187']
+
+  - job_name: 'keycloak-jvm'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['keycloak:8080']
+    params:
+      name: ['jvm_memory_used_bytes,jvm_threads_current,jvm_gc_collection_seconds']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'keycloak-jvm'
+
+  - job_name: 'keycloak-http'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['keycloak:8080']
+    params:
+      name: ['http_server_requests_seconds_count,http_server_requests_seconds_sum']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'keycloak-http'

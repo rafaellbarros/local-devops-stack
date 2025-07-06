@@ -8,11 +8,11 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-devops}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devops123}
-      POSTGRES_DB: ${POSTGRES_DB:-devops_stack}
+      POSTGRES_DB: ${POSTGRES_DB:-devops}
     volumes:
-      - ./volumes/postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "54322:5432"
     networks:
       - devops-net
     healthcheck:
@@ -28,7 +28,7 @@ services:
     container_name: prometheus
     volumes:
       - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./volumes/prometheus_data:/prometheus
+      - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -52,7 +52,7 @@ services:
     image: grafana/grafana-oss:latest
     container_name: grafana
     volumes:
-      - ./volumes/grafana_data:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./configs/grafana/provisioning:/etc/grafana/provisioning
       - ./configs/grafana/dashboards:/var/lib/grafana/dashboards
     environment:
@@ -78,22 +78,50 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD:-admin123}
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-devops_stack}
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-devops}
       KC_DB_USERNAME: ${POSTGRES_USER:-devops}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-devops123}
+      KC_DB_SCHEMA: public
       KC_PROXY: edge
-      KC_METRICS_ENABLED: "true"  # Habilita métricas
       KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      
+      # Configurações específicas para métricas
+      KC_METRICS_ENABLED: "true"
+      KC_FEATURES: "metrics"
+      KC_SPI_METRICS_MICROMETER_EXPORT_PROMETHEUS_ENABLED: "true"
+      KC_SPI_METRICS_MICROMETER_EXPORT_PROMETHEUS_HOST: "0.0.0.0"
+      KC_SPI_METRICS_MICROMETER_EXPORT_PROMETHEUS_PATH: "/metrics"
+
+      # Configurações adicionais para métricas
+      KC_SPI_METRICS_MICROMETER_JVM_MEMORY_ENABLED: "true"
+      KC_SPI_METRICS_MICROMETER_JVM_THREADS_ENABLED: "true"
+      KC_SPI_METRICS_MICROMETER_JVM_GC_ENABLED: "true"
+      KC_SPI_METRICS_MICROMETER_HTTP_ENABLED: "true"
+      KC_SPI_METRICS_MICROMETER_CACHE_ENABLED: "true"
+      KC_SPI_METRICS_MICROMETER_DATASOURCE_ENABLED: "true"
+
+      # Otimizações JVM atualizadas
+      JAVA_OPTS: >
+        -Djava.net.preferIPv4Stack=true
+        -Djboss.as.management.blocking.timeout=3600
+        -Dkeycloak.metrics.enabled=true
+        -Dkeycloak.metrics.prometheus.endpoint=true
+        -Dkeycloak.metrics.jvm.enabled=true
+        -Dkeycloak.metrics.http.enabled=true
+        -Dkeycloak.metrics.cache.enabled=true
+        -Dkeycloak.metrics.db.enabled=true
     volumes:
-      - ./configs/keycloak:/opt/keycloak/data/import
+      - ./configs/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./configs/keycloak/providers:/opt/keycloak/providers  # Para adicionar SPIs customizados
     command:
-      - start
-      - --auto-build
+      - start-dev
       - --db-schema=public
       - --health-enabled=true
-      - --metrics-enabled=true
       - --http-enabled=true
       - --hostname-strict=false
+      - --import-realm
+      - --metrics-enabled=true  # Adicionei explicitamente
     ports:
       - "8180:8080"
     networks:
@@ -103,12 +131,18 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   # Postgres Exporter para métricas do PostgreSQL
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter
     container_name: postgres-exporter
     environment:
-      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-devops}:${POSTGRES_PASSWORD:-devops123}@postgres:5432/${POSTGRES_DB:-devops_stack}?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-devops}:${POSTGRES_PASSWORD:-devops123}@postgres:5432/${POSTGRES_DB:-devops}?sslmode=disable"
     ports:
       - "9187:9187"
     networks:
@@ -121,3 +155,8 @@ networks:
   devops-net:
     driver: bridge
     name: devops-net
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
