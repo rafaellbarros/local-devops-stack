@@ -2598,7 +2598,7 @@
     ]
   },
   "timezone": "",
-  "title": "PostgreSQL Monitoring - Multi-Database",
+  "title": "01 - PostgreSQL Monitoring - Multi-Database",
   "uid": "postgres-multi-db",
   "version": 1
 }

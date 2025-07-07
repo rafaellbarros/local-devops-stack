@@ -1,161 +1,30 @@
 version: '3.8'
 
 services:
-  # Banco de Dados (PostgreSQL)
   postgres:
-    image: postgres:15-alpine
-    container_name: postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_ROOT_USER:-postgres}  # Usuário admin principal
-      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD:-postgres123}
-      POSTGRES_DB: ${POSTGRES_ROOT_DB:-postgres}  # DB inicial (pode ser 'postgres')
-      LANG: en_US.utf8
-      LC_ALL: en_US.utf8
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./configs/postgres/init-scripts:/docker-entrypoint-initdb.d  # Pasta com scripts SQL
-    ports:
-      - "54322:5432"
-    networks:
-      - devops-net
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_ROOT_USER:-postgres}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
+    extends:
+      file: ./services/postgres/service.yml
+      service: postgres
 
-  # Prometheus
   prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    volumes:
-      - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-    ports:
-      - "9090:9090"
-    networks:
-      - devops-net
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O-", "http://localhost:9090/-/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    depends_on:
-      - postgres-exporter
+    extends:
+      file: ./services/prometheus/service.yml
+      service: prometheus
 
-  # Grafana
   grafana:
-    image: grafana/grafana-oss:latest
-    container_name: grafana
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./configs/grafana/provisioning:/etc/grafana/provisioning
-      - ./configs/grafana/dashboards:/var/lib/grafana/dashboards
-    environment:
-      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
-      GF_USERS_ALLOW_SIGN_UP: "false"
-      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-      GF_AUTH_DISABLE_LOGIN_FORM: "false"
-      GF_AUTH_ANONYMOUS_ENABLED: "false"
-    ports:
-      - "3000:3000"
-    networks:
-      - devops-net
-    depends_on:
-      - prometheus
-    restart: unless-stopped
+    extends:
+      file: ./services/grafana/service.yml
+      service: grafana
 
-  # Keycloak com métricas habilitadas
   keycloak:
-    image: quay.io/keycloak/keycloak:21.1.1
-    container_name: keycloak
-    environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD:-admin123}
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/${DB_KEYCLOAK:-devops_keycloak}
-      KC_DB_USERNAME: ${DB_KEYCLOAK_USER:-keycloak_user}
-      KC_DB_PASSWORD: ${DB_KEYCLOAK_PASSWORD:-keycloak123}
-      KC_DB_SCHEMA: public
-      KC_PROXY: edge
-      KC_HTTP_ENABLED: "true"
-      KC_HOSTNAME_STRICT: "false"
-      
-      # Configurações específicas para métricas
-      KC_METRICS_ENABLED: "true"
-      KC_FEATURES: "metrics"
-      KC_SPI_METRICS_MICROMETER_EXPORT_PROMETHEUS_ENABLED: "true"
-      KC_SPI_METRICS_MICROMETER_EXPORT_PROMETHEUS_HOST: "0.0.0.0"
-      KC_SPI_METRICS_MICROMETER_EXPORT_PROMETHEUS_PATH: "/metrics"
+    extends:
+      file: ./services/keycloak/service.yml
+      service: keycloak
 
-      # Configurações adicionais para métricas
-      KC_SPI_METRICS_MICROMETER_JVM_MEMORY_ENABLED: "true"
-      KC_SPI_METRICS_MICROMETER_JVM_THREADS_ENABLED: "true"
-      KC_SPI_METRICS_MICROMETER_JVM_GC_ENABLED: "true"
-      KC_SPI_METRICS_MICROMETER_HTTP_ENABLED: "true"
-      KC_SPI_METRICS_MICROMETER_CACHE_ENABLED: "true"
-      KC_SPI_METRICS_MICROMETER_DATASOURCE_ENABLED: "true"
-
-      # Otimizações JVM atualizadas
-      JAVA_OPTS: >
-        -Djava.net.preferIPv4Stack=true
-        -Djboss.as.management.blocking.timeout=3600
-        -Dkeycloak.metrics.enabled=true
-        -Dkeycloak.metrics.prometheus.endpoint=true
-        -Dkeycloak.metrics.jvm.enabled=true
-        -Dkeycloak.metrics.http.enabled=true
-        -Dkeycloak.metrics.cache.enabled=true
-        -Dkeycloak.metrics.db.enabled=true
-    volumes:
-      - ./configs/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
-      - ./configs/keycloak/providers:/opt/keycloak/providers  # Para adicionar SPIs customizados
-    command:
-      - start-dev
-      - --db-schema=public
-      - --health-enabled=true
-      - --http-enabled=true
-      - --hostname-strict=false
-      - --import-realm
-      - --metrics-enabled=true  # Adicionei explicitamente
-    ports:
-      - "8180:8080"
-    networks:
-      - devops-net
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  # Postgres Exporter para métricas do PostgreSQL
   postgres-exporter:
-    image: prometheuscommunity/postgres-exporter
-    container_name: postgres-exporter
-    environment:
-      DATA_SOURCE_NAME: "postgresql://${POSTGRES_ROOT_USER:-postgres}:${POSTGRES_ROOT_PASSWORD:-postgres123}@postgres:5432/postgres?sslmode=disable"
-      PG_EXPORTER_EXTEND_QUERY_PATH: /etc/postgresql/queries.yaml
-    volumes:
-      - ./configs/postgres/queries.yaml:/etc/postgresql/queries.yaml
-    ports:
-      - "9187:9187"
-    networks:
-      - devops-net
-    depends_on:
-      - postgres
-    restart: unless-stopped
+    extends:
+      file: ./services/postgres-exporter/service.yml
+      service: postgres-exporter
 
 networks:
   devops-net:

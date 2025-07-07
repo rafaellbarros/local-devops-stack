@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_ROOT_USER:-postgres}:${POSTGRES_ROOT_PASSWORD:-postgres123}@postgres:5432/postgres?sslmode=disable"
+      PG_EXPORTER_EXTEND_QUERY_PATH: /etc/postgresql/queries.yaml
+    volumes:
+      - ./configs/postgres/queries.yaml:/etc/postgresql/queries.yaml
+    ports:
+      - "9187:9187"
+    networks:
+      - devops-net
+    depends_on:
+      - postgres
+    restart: unless-stopped
